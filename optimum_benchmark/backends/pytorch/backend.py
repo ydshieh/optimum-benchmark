@@ -121,7 +121,7 @@ class PyTorchBackend(Backend[PyTorchConfig]):
                 )
             else:
                 LOGGER.info("\t+ Using torch.compile on model")
-                self.pretrained_model = torch.compile(self.pretrained_model, **self.config.torch_compile_config)
+                self.pretrained_model.forward = torch.compile(self.pretrained_model.forward, **self.config.torch_compile_config)
 
         # DeepSpeed
         if self.config.deepspeed_inference:
