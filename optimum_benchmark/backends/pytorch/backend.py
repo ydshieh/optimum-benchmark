@@ -123,6 +123,15 @@ class PyTorchBackend(Backend[PyTorchConfig]):
                 LOGGER.info("\t+ Using torch.compile on model")
                 self.pretrained_model.forward = torch.compile(self.pretrained_model.forward, **self.config.torch_compile_config)
 
+                # getting this from `inference/benchmark.py", line 148`
+                # `backend.generate(self.inputs, self.config.generate_kwargs)`
+                inputs = {'input_ids': torch.tensor([[31460, 13356,  2770, 20443, 12282,   742, 16092]], device='cuda:0'), 'attention_mask': torch.tensor([[1, 1, 1, 1, 1, 1, 1]], device='cuda:0')}
+                generate_kwargs = {'num_return_sequences': 1, 'max_new_tokens': 16, 'min_new_tokens': 16, 'temperature': 1.0, 'do_sample': False, 'use_cache': True, 'pad_token_id': 0, 'num_beams': 1}
+
+                # Let's try to generate here
+                self.pretrained_model.generate(**inputs, **generate_kwargs)
+                print("OK: generate just after compile")
+
         # DeepSpeed
         if self.config.deepspeed_inference:
             LOGGER.info("\t+ Initializing DeepSpeed Inference Engine")
